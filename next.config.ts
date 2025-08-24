@@ -1,20 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // tus opciones existentes
   images: {
     domains: ["images.unsplash.com", "randomuser.me"],
   },
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true  // Esto ignorará errores de ESLint durante el build
+    ignoreDuringBuilds: true, // ignora errores de ESLint en el build
   },
-  // @ts-ignore - La propiedad missingSuspenseWithCSRBailout existe en tiempo de ejecución pero no en el tipo
+  // 👇 clave: activar la lectura de paths del tsconfig
   experimental: {
-    missingSuspenseWithCSRBailout: false  // Deshabilita la comprobación de useSearchParams con Suspense
-  }
+    tsconfigPaths: true,
+  },
 };
 
 export default nextConfig;
