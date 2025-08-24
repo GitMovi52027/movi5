@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Route {
+  id              String        @id @default(cuid())
+  origin          String
+  destination     String
+  busPrice        Int?
+  boatPrice       Int?
+  startTime       String
+  endTime         String
+  frequencyType   FrequencyType
+  intervalMinutes Int?
+  specificTimes   String[]
+  operatingDays   String[]
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  tripType        TripType?
+}
+
+model Request {
+  id            String        @id @default(cuid())
+  routeId       String?
+  origin        String
+  destination   String
+  departureDate DateTime
+  returnDate    DateTime?
+  passengers    Int
+  passengerData Json?
+  totalPrice    Float
+  status        Status        @default(PENDING)
+  customerName  String
+  customerEmail String
+  customerPhone String
+  paymentStatus PaymentStatus @default(PENDING)
+  departureTime String?
+  returnTime    String?
+  ticketType    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  notes         RequestNote[]
+  webhookLogs   WebhookLog[]
+}
+
+model RequestNote {
+  id        String   @id @default(cuid())
+  requestId String
+  content   String
+  createdBy String?
+  createdAt DateTime @default(now())
+  request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+}
+
+model Configuration {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model WebhookLog {
+  id         String   @id @default(cuid())
+  requestId  String
+  webhookUrl String
+  payload    Json
+  response   Json?
+  statusCode Int?
+  success    Boolean
+  createdAt  DateTime @default(now())
+  request    Request  @relation(fields: [requestId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum FrequencyType {
+  INTERVAL
+  SPECIFIC
+}
+
+enum TripType {
+  BUS
+  BUS_BOAT
+  BOAT
+}
